@@ -5,6 +5,7 @@ import 'package:book_tickets_app/utils/app_styles.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import '../utils/app_layout.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -32,10 +33,10 @@ class HomeScreen extends StatelessWidget {
                       ],
                     ),
                     Container(
-                      height: 50,
-                      width: 50,
+                      height: AppLayout.getHeight(50),
+                      width: AppLayout.getHeight(50),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(AppLayout.getHeight(10)),
                         image: const DecorationImage(
                           fit: BoxFit.cover,
                           image: AssetImage("assets/images/img_1.png")
@@ -47,7 +48,7 @@ class HomeScreen extends StatelessWidget {
                 const Gap(25),
                 Container(
                   decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(AppLayout.getHeight(10)),
                       color: const Color(0xFFF4F6FD)),
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                   child: Row(
