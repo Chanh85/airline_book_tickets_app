@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "297904863455",
+    "project_id": "book-tickets-app",
+    "storage_bucket": "book-tickets-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:297904863455:android:40496575ec2fb16cfe916a",
+        "android_client_info": {
+          "package_name": "com.ChiAnh.book_tickets_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5OjaQrA3ZXrJMNVsEIvsjcaYEKW_M_2Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
