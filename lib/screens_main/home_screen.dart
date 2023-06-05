@@ -1,5 +1,5 @@
-import 'package:book_tickets_app/screens/hotels_view.dart';
-import 'package:book_tickets_app/screens/tickets_view.dart';
+import 'package:book_tickets_app/screens_main/hotels_view.dart';
+import 'package:book_tickets_app/screens_main/tickets_view.dart';
 import 'package:book_tickets_app/utils/app_info_list.dart';
 import 'package:book_tickets_app/utils/app_styles.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
