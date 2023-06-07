@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 
 import '../models/user.dart';
 
@@ -35,6 +36,21 @@ class AuthService {
   //sign-in
 
   //register
+  Future register(String email, String password) async{
+    try{
+      UserCredential result = await _auth.createUserWithEmailAndPassword(email: email, password: password);
+      User? user = result.user;
+      return _userFromFireBase(user);
+    }on FirebaseAuthException catch(e)
+    {
+      switch(e.code)
+      {
+        case "email-already-in-use":
+          return "$email is already in use";
+      }
+      return null;
+    }
+  }
 
   //sign out
   Future signOut() async{
