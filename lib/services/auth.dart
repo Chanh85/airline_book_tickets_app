@@ -33,6 +33,24 @@ class AuthService {
   }
 
   //sign-in
+  Future signIn(String email, String password) async{
+    try{
+      UserCredential result = await _auth.signInWithEmailAndPassword(email: email, password: password);
+      User? user = result.user;
+      return _userFromFireBase(user);
+    } on FirebaseAuthException catch(e)
+    {
+      switch(e.code)
+      {
+        case "wrong-password":
+          return "wrongpass";
+        case "user-not-found":
+          return "usernotfound";
+      }
+      return null;
+    }
+  }
+
 
   //register
   Future register(String email, String password) async{

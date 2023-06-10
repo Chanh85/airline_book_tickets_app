@@ -1,3 +1,4 @@
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 
@@ -15,38 +16,43 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _isObscure = true;
   bool _isObscureConfirm = true;
   String _passwordValue = '';
-  String error = '';
   final AuthService _auth = AuthService();
 
   var _key = GlobalKey<FormState>();
 
-  late FocusNode myFocusNode;
-
-  @override
-  void initState() {
-    super.initState();
-    myFocusNode = FocusNode();
-  }
 
   void _handleSubmit() async {
     if (_key.currentState?.validate() ?? false) {
       _key.currentState?.save();
       dynamic result = await _auth.register(email, password);
-      if(result == null)
-        {
-          setState(() {
-            error = 'Email is not valid, please re-enter';
-          });
-        }
-      else if(result == '$email is already in use'){
-        setState(() {
-          error = '$email is already in use';
-        });
+      if(result == '$email is already in use'){
+        final snackBar = SnackBar(
+            elevation: 0,
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.transparent,
+            content: AwesomeSnackbarContent(
+                title: 'Error!',
+                message: "$email is already in use, please use a different email!",
+                contentType: ContentType.failure));
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(snackBar);
       }
       _key.currentState?.reset();
-      myFocusNode.requestFocus();
+      FocusManager.instance.primaryFocus?.unfocus();
 
     } else {
+      final snackBar = SnackBar(
+          elevation: 0,
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.transparent,
+          content: AwesomeSnackbarContent(
+              title: 'Error!',
+              message: "Invalid form",
+              contentType: ContentType.failure));
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(snackBar);
       print('Invalid form');
     }
   }
@@ -87,7 +93,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 TextFormField(
                   initialValue: fullname,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
-                  focusNode: myFocusNode,
                   onSaved: (v) {
                     fullname = v ?? '';
                   },
@@ -101,7 +106,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   decoration: InputDecoration(
                     labelText: "Full name",
                     hintText: "Your full name",
-                    border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.person),
                   ),
                 ),
@@ -124,7 +128,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   decoration: InputDecoration(
                     labelText: "Username",
                     hintText: "Your username",
-                    border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.person_outline),
                   ),
                 ),
@@ -150,7 +153,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   decoration: InputDecoration(
                     labelText: "Email",
                     hintText: "Your email",
-                    border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.email),
                   ),
                 ),
@@ -173,7 +175,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   decoration: InputDecoration(
                     labelText: "Phone Number",
                     hintText: "Your phone number",
-                    border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.phone),
                   ),
                 ),
@@ -211,7 +212,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   decoration: InputDecoration(
                     labelText: "Password",
                     hintText: "Password",
-                    border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.password),
                     suffixIcon: IconButton(
                         onPressed: () {
@@ -247,7 +247,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   decoration: InputDecoration(
                     labelText: "Confirm Password",
                     hintText: "Confirm Password",
-                    border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.password),
                     suffixIcon: IconButton(
                         onPressed: () {
@@ -292,13 +291,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ]
                   )
                 ),
-                SizedBox(
-                  height: 30,
-                ),
-                Text(
-                  error,
-                  style: TextStyle(color: Colors.red, fontSize: 14.0),
-                )
               ],
             ),
           ),

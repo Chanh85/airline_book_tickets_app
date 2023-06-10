@@ -1,7 +1,8 @@
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:book_tickets_app/screens_authenticate/signInAnon.dart';
 import 'package:flutter/material.dart';
-import 'register_screen.dart';
 import 'package:email_validator/email_validator.dart';
+import '../services/auth.dart';
 
 class LoginScreen extends StatefulWidget {
   final Function togggleView;
@@ -15,28 +16,54 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isObscure = true;
   String _errorMessage = '';
   var _key = GlobalKey<FormState>();
-
-  late FocusNode myFocusNode;
-
-  @override
-  void initState() {
-    super.initState();
-    myFocusNode = FocusNode();
-  }
+  final AuthService _auth = AuthService();
 
   void _handleSubmit() async {
     if (_key.currentState?.validate() ?? false) {
       _key.currentState?.save();
       _key.currentState?.reset();
-      myFocusNode.requestFocus();
 
-      try {
-
-      } catch (e) {
-
+      dynamic result = await _auth.signIn(email, password);
+      if(result == 'wrongpass'){
+        final snackBar = SnackBar(
+            elevation: 0,
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.transparent,
+            content: AwesomeSnackbarContent(
+                title: 'Error!',
+                message: "Wrong password, please check again!",
+                contentType: ContentType.failure));
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(snackBar);
       }
+      else if(result == 'usernotfound'){
+        final snackBar = SnackBar(
+            elevation: 0,
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.transparent,
+            content: AwesomeSnackbarContent(
+                title: 'Error!',
+                message: "$email is not registered, please sign up and try again!",
+                contentType: ContentType.failure));
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(snackBar);
+      }
+      _key.currentState?.reset();
+      FocusManager.instance.primaryFocus?.unfocus();
     } else {
-      print('Invalid form');
+      final snackBar = SnackBar(
+          elevation: 0,
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.transparent,
+          content: AwesomeSnackbarContent(
+              title: 'Error!',
+              message: "Invalid form",
+              contentType: ContentType.failure));
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(snackBar);
     }
   }
 
@@ -71,7 +98,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 TextFormField(
                   autovalidateMode: AutovalidateMode.onUserInteraction,
-                  focusNode: myFocusNode,
                   onSaved: (v) {
                     email = v ?? '';
                   },
@@ -89,7 +115,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   decoration: InputDecoration(
                     labelText: "Email",
                     hintText: "Your email",
-                    border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.email),
                   ),
                 ),
@@ -121,7 +146,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   decoration: InputDecoration(
                     labelText: "Password",
                     hintText: "Password",
-                    border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.password),
                     suffixIcon: IconButton(
                         onPressed: () {
@@ -197,7 +221,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: TextStyle(
                     color: Colors.black,
                   ),
-                ),
+                )
               ],
             ),
           ),
