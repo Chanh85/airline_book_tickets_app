@@ -1,5 +1,6 @@
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:book_tickets_app/screens_authenticate/signInAnon.dart';
+import 'package:book_tickets_app/shared/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import '../services/auth.dart';
@@ -17,15 +18,19 @@ class _LoginScreenState extends State<LoginScreen> {
   String _errorMessage = '';
   var _key = GlobalKey<FormState>();
   final AuthService _auth = AuthService();
+  bool loading = false;
 
   void _handleSubmit() async {
     if (_key.currentState?.validate() ?? false) {
       _key.currentState?.save();
-      _key.currentState?.reset();
+      setState(() {
+        loading = true;
+      });
+      var snackBar;
 
       dynamic result = await _auth.signIn(email, password);
       if(result == 'wrongpass'){
-        final snackBar = SnackBar(
+        snackBar = SnackBar(
             elevation: 0,
             behavior: SnackBarBehavior.floating,
             backgroundColor: Colors.transparent,
@@ -33,12 +38,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 title: 'Error!',
                 message: "Wrong password, please check again!",
                 contentType: ContentType.failure));
-        ScaffoldMessenger.of(context)
-          ..hideCurrentSnackBar()
-          ..showSnackBar(snackBar);
+        setState(() {
+          loading = false;
+        });
       }
       else if(result == 'usernotfound'){
-        final snackBar = SnackBar(
+        snackBar = SnackBar(
             elevation: 0,
             behavior: SnackBarBehavior.floating,
             backgroundColor: Colors.transparent,
@@ -46,10 +51,13 @@ class _LoginScreenState extends State<LoginScreen> {
                 title: 'Error!',
                 message: "$email is not registered, please sign up and try again!",
                 contentType: ContentType.failure));
-        ScaffoldMessenger.of(context)
-          ..hideCurrentSnackBar()
-          ..showSnackBar(snackBar);
+        setState(() {
+          loading = false;
+        });
       }
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(snackBar);
       _key.currentState?.reset();
       FocusManager.instance.primaryFocus?.unfocus();
     } else {
@@ -72,7 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return loading? Loading(): Scaffold(
       appBar: AppBar(
         title: Text('Login'),
       ),
@@ -189,26 +197,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           },
                           child: Text(
                             "Register here",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
-                      ),
-                      TextSpan(
-                        text: " | ",
-                      ),
-                      WidgetSpan(
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (ctx) => SignIn()));
-                          },
-                          child: Text(
-                            "Sign in anonymous",
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Colors.black,

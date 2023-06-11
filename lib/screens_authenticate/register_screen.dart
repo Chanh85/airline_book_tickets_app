@@ -1,4 +1,5 @@
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+import 'package:book_tickets_app/shared/loading.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 
@@ -17,6 +18,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _isObscureConfirm = true;
   String _passwordValue = '';
   final AuthService _auth = AuthService();
+  bool loading = false;
 
   var _key = GlobalKey<FormState>();
 
@@ -24,9 +26,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void _handleSubmit() async {
     if (_key.currentState?.validate() ?? false) {
       _key.currentState?.save();
+      setState(() {
+        loading = true;
+      });
       dynamic result = await _auth.register(email, password);
+      var snackBar;
       if(result == '$email is already in use'){
-        final snackBar = SnackBar(
+        snackBar = SnackBar(
             elevation: 0,
             behavior: SnackBarBehavior.floating,
             backgroundColor: Colors.transparent,
@@ -34,10 +40,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 title: 'Error!',
                 message: "$email is already in use, please use a different email!",
                 contentType: ContentType.failure));
-        ScaffoldMessenger.of(context)
-          ..hideCurrentSnackBar()
-          ..showSnackBar(snackBar);
+        setState(() {
+          loading = false;
+        });
       }
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(snackBar);
       _key.currentState?.reset();
       FocusManager.instance.primaryFocus?.unfocus();
 
@@ -66,7 +75,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return loading? Loading(): Scaffold(
       appBar: AppBar(
         title: Text('Sign Up'),
       ),
